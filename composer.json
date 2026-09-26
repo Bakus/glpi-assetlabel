@@ -1,0 +1,16 @@
+{
+    "name": "bakus/glpi-assetlabel",
+    "description": "GLPI plugin printing QR code inventory labels on Brother QL label printers",
+    "type": "glpi-plugin",
+    "license": "0BSD",
+    "require": {
+        "php": ">=8.3",
+        "ext-gd": "*",
+        "ext-zip": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "GlpiPlugin\\Assetlabel\\": "src/"
+        }
+    }
+}

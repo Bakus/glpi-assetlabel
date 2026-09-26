@@ -1,0 +1,38 @@
+{#
+ # Asset Label - QR code inventory labels for GLPI on Brother QL printers.
+ #
+ # @author  Krzysztof Andrzej Błachut vel Bakus
+ # @license 0BSD
+ # @link    https://github.com/Bakus/glpi-assetlabel
+ #}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto mw-100">
+                {# Shown at the label's real size (CSS millimetres, close to real on a standard monitor at 100 % zoom) #}
+                <div class="overflow-auto">
+                    <img src="{{ preview_url }}" alt="{{ __('Label preview', 'assetlabel') }}"
+                         class="border" style="width: {{ label_width_mm }}mm; max-width: none;">
+                </div>
+                <div class="text-muted small mt-1">{{ format_name }}</div>
+            </div>
+            <div class="col">
+                <form method="get" action="{{ action }}" target="_blank" class="d-flex flex-wrap gap-2 align-items-center">
+                    {% for name, value in query %}
+                        <input type="hidden" name="{{ name }}" value="{{ value }}">
+                    {% endfor %}
+                    <select name="output" class="form-select w-auto" aria-label="{{ __('Output format', 'assetlabel') }}">
+                        {% for value, label in outputs %}
+                            <option value="{{ value }}" {{ value == default_output ? 'selected' : '' }}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-download"></i>
+                        <span>{{ __('Download label', 'assetlabel') }}</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,163 @@
+# Asset Label - Polish translation.
+msgid ""
+msgstr ""
+"Project-Id-Version: assetlabel 1.0.0\n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+
+msgid "Asset Label"
+msgstr "Etykiety zasobów"
+
+msgid "Label"
+msgid_plural "Labels"
+msgstr[0] "Etykieta"
+msgstr[1] "Etykiety"
+msgstr[2] "Etykiet"
+
+msgid "Print labels"
+msgstr "Drukuj etykiety"
+
+msgid "Generate"
+msgstr "Generuj"
+
+msgid "PDF: one label per page. PNG: several labels are packed in a ZIP archive."
+msgstr "PDF: jedna etykieta na stronę. PNG: wiele etykiet trafia do archiwum ZIP."
+
+msgid "Output format"
+msgstr "Format wyjściowy"
+
+msgid "Label preview"
+msgstr "Podgląd etykiety"
+
+msgid "Download label"
+msgstr "Pobierz etykietę"
+
+msgid "Labels are ready"
+msgstr "Etykiety są gotowe"
+
+msgid "The download should start automatically. If it does not, use the button below."
+msgstr "Pobieranie powinno rozpocząć się automatycznie. Jeśli tak się nie stanie, użyj przycisku poniżej."
+
+msgid "Download %s"
+msgstr "Pobierz %s"
+
+msgid "This file is no longer available. Please generate the labels again."
+msgstr "Ten plik nie jest już dostępny. Wygeneruj etykiety ponownie."
+
+msgid "The QR code content is empty."
+msgstr "Treść kodu QR jest pusta."
+
+msgid "The QR code content is too long."
+msgstr "Treść kodu QR jest zbyt długa."
+
+msgid "The QR code content is too long to be printed legibly on this label."
+msgstr "Treść kodu QR jest zbyt długa, by czytelnie wydrukować go na tej etykiecie."
+
+msgid "The logo must be a PNG, JPEG, GIF or WebP image of at most 2 MB and 5000 × 5000 pixels."
+msgstr "Logo musi być obrazem PNG, JPEG, GIF lub WebP o rozmiarze do 2 MB i 5000 × 5000 pikseli."
+
+msgid "The logo image could not be read."
+msgstr "Nie udało się odczytać obrazu logo."
+
+msgid "The logo could not be saved."
+msgstr "Nie udało się zapisać logo."
+
+msgid "Configuration saved."
+msgstr "Konfiguracja została zapisana."
+
+msgid "Item types"
+msgstr "Typy zasobów"
+
+msgid "Print labels for"
+msgstr "Drukuj etykiety dla"
+
+msgid "QR code"
+msgstr "Kod QR"
+
+msgid "The GLPI URL is not set (Setup > General), item links in QR codes will be incomplete."
+msgstr "Adres URL GLPI nie jest ustawiony (Ustawienia > Ogólne), linki do zasobów w kodach QR będą niekompletne."
+
+msgid "Link to the item in GLPI"
+msgstr "Link do zasobu w GLPI"
+
+msgid "Custom template"
+msgstr "Własny szablon"
+
+msgid "QR code content"
+msgstr "Zawartość kodu QR"
+
+msgid "Template"
+msgstr "Szablon"
+
+msgid "Used with \"Custom template\". Available fields: %s"
+msgstr "Używany w trybie \"Własny szablon\". Dostępne pola: %s"
+
+msgid "Label content"
+msgstr "Zawartość etykiety"
+
+msgid "Additional label"
+msgstr "Dodatkowa etykieta"
+
+msgid "For example: \"Property of ACME\" or \"S/N: {serial}\". Available fields: %s"
+msgstr "Na przykład: \"Własność: ACME\" albo \"S/N: {serial}\". Dostępne pola: %s"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Upload a logo"
+msgstr "Prześlij logo"
+
+msgid "PNG, JPEG, GIF or WebP, at most 2 MB. It is converted to grayscale."
+msgstr "PNG, JPEG, GIF lub WebP, do 2 MB. Logo jest konwertowane do skali szarości."
+
+msgid "Delete the current logo"
+msgstr "Usuń obecne logo"
+
+msgid "Output"
+msgstr "Wydruk"
+
+msgid "Default format"
+msgstr "Domyślny format"
+
+msgid "Sharp text (no anti-aliasing)"
+msgstr "Ostry tekst (bez wygładzania)"
+
+msgid "Pure black text without gray edges; can look crisper on thermal printers."
+msgstr "Czysto czarny tekst bez szarych krawędzi; na drukarkach termicznych może być wyraźniejszy."
+
+msgid "Preview"
+msgstr "Podgląd"
+
+msgid "Printer test (PDF with safe area frame)"
+msgstr "Test drukarki (PDF z ramką obszaru bezpiecznego)"
+
+msgid "Label type"
+msgstr "Rodzaj etykiety"
+
+msgid "Label length on continuous tape (mm)"
+msgstr "Długość etykiety na taśmie ciągłej (mm)"
+
+msgid "Used only with continuous tapes."
+msgstr "Używana tylko z taśmami ciągłymi."
+
+msgid "DK-22210 (29 mm continuous tape)"
+msgstr "DK-22210 (taśma ciągła 29 mm)"
+
+
+msgid "DK-22205 (62 mm continuous tape)"
+msgstr "DK-22205 (taśma ciągła 62 mm)"
+
+msgid "%1$s, %2$d mm long"
+msgstr "%1$s, długość %2$d mm"
+
+msgid "The ZIP archive could not be created. Check that the GLPI temporary directory (files/_tmp) is writable."
+msgstr "Nie udało się utworzyć archiwum ZIP. Sprawdź, czy katalog tymczasowy GLPI (files/_tmp) jest zapisywalny."
+
+msgid "The logo file is larger than the server upload limit (%s). Choose a smaller file."
+msgstr "Plik logo jest większy niż limit przesyłania na serwerze (%s). Wybierz mniejszy plik."
+
+msgid "The logo could not be uploaded. Try again; if it keeps failing, check the PHP upload settings."
+msgstr "Nie udało się przesłać logo. Spróbuj ponownie, a jeśli błąd się powtarza, sprawdź ustawienia przesyłania plików w PHP."

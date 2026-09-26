@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <name>Asset Label</name>
+   <key>assetlabel</key>
+   <state>stable</state>
+   <description>
+      <short>
+         <en><![CDATA[QR code inventory labels for Brother QL label printers]]></en>
+         <pl><![CDATA[Etykiety inwentarzowe z kodem QR dla drukarek Brother QL]]></pl>
+      </short>
+      <long>
+         <en><![CDATA[Prints black and white QR code inventory labels for GLPI assets on Brother QL die-cut labels and continuous tapes, as PDF or PNG, from the item tab or as a bulk action.]]></en>
+         <pl><![CDATA[Drukuje czarno-białe etykiety inwentarzowe z kodem QR dla zasobów GLPI na etykietach i taśmach ciągłych Brother QL, w PDF lub PNG, z zakładki zasobu lub jako akcja masowa.]]></pl>
+      </long>
+   </description>
+   <homepage>https://github.com/Bakus/glpi-assetlabel</homepage>
+   <download>https://github.com/Bakus/glpi-assetlabel/releases</download>
+   <issues>https://github.com/Bakus/glpi-assetlabel/issues</issues>
+   <readme>https://raw.githubusercontent.com/Bakus/glpi-assetlabel/main/README.md</readme>
+   <changelog>https://github.com/Bakus/glpi-assetlabel/releases</changelog>
+   <authors>
+      <author>Krzysztof Andrzej Błachut vel Bakus</author>
+   </authors>
+   <versions>
+      <version>
+         <num>0.2.0</num>
+         <compatibility>~12.0.0</compatibility>
+         <download_url>https://github.com/Bakus/glpi-assetlabel/releases/download/v0.2.0/assetlabel-0.2.0.tar.bz2</download_url>
+      </version>
+   </versions>
+   <langs>
+      <lang>en_GB</lang>
+      <lang>pl_PL</lang>
+   </langs>
+   <license>0BSD</license>
+   <tags>
+      <en>
+         <tag>label</tag>
+         <tag>QRcode</tag>
+         <tag>inventory</tag>
+         <tag>print</tag>
+         <tag>PDF</tag>
+         <tag>PNG</tag>
+         <tag>Brother</tag>
+      </en>
+      <pl>
+         <tag>etykieta</tag>
+         <tag>QRcode</tag>
+         <tag>inwentaryzacja</tag>
+         <tag>drukowanie</tag>
+         <tag>PDF</tag>
+         <tag>PNG</tag>
+         <tag>Brother</tag>
+      </pl>
+   </tags>
+</root>

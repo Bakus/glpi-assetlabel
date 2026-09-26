@@ -1,0 +1,99 @@
+{#
+ # Asset Label - QR code inventory labels for GLPI on Brother QL printers.
+ #
+ # @author  Krzysztof Andrzej Błachut vel Bakus
+ # @license 0BSD
+ # @link    https://github.com/Bakus/glpi-assetlabel
+ #}
+
+{% extends 'layout/page_without_tabs.html.twig' %}
+
+{% import 'components/form/fields_macros.html.twig' as fields %}
+
+{% block content_title %}
+    {{ title }}
+{% endblock content_title %}
+
+{% block content_body %}
+    <form method="post" action="{{ action }}" enctype="multipart/form-data">
+        <div class="card mb-3">
+            <div class="card-body">
+                {{ fields.smallTitle(__('Item types', 'assetlabel'), 'ti ti-devices') }}
+                {{ fields.dropdownArrayField('itemtypes', null, itemtypes, __('Print labels for', 'assetlabel'), {
+                    multiple: true,
+                    values: settings.itemtypes,
+                    full_width: true,
+                }) }}
+
+                {{ fields.smallTitle(__('QR code', 'assetlabel'), 'ti ti-qrcode') }}
+                {% if missing_url_base %}
+                    <div class="alert alert-warning">
+                        {{ __('The GLPI URL is not set (Setup > General), item links in QR codes will be incomplete.', 'assetlabel') }}
+                    </div>
+                {% endif %}
+                {{ fields.dropdownArrayField('qr_mode', settings.qr_mode, {
+                    'url': __('Link to the item in GLPI', 'assetlabel'),
+                    'template': __('Custom template', 'assetlabel'),
+                }, __('QR code content', 'assetlabel')) }}
+                {{ fields.textField('qr_template', settings.qr_template, __('Template', 'assetlabel'), {
+                    helper: __('Used with "Custom template". Available fields: %s', 'assetlabel')|format(placeholders),
+                }) }}
+
+                {{ fields.smallTitle(__('Label content', 'assetlabel'), 'ti ti-list-details') }}
+                {{ fields.checkboxField('show_name', settings.show_name, __('Name')) }}
+                {{ fields.checkboxField('show_otherserial', settings.show_otherserial, __('Inventory number')) }}
+                {{ fields.checkboxField('show_type', settings.show_type, __('Item type')) }}
+                {{ fields.checkboxField('show_entity', settings.show_entity, _n('Entity', 'Entities', 1)) }}
+                {{ fields.checkboxField('show_extra', settings.show_extra, __('Additional label', 'assetlabel')) }}
+                {{ fields.textField('extra_text', settings.extra_text, __('Additional label', 'assetlabel'), {
+                    maxlength: extra_text_max,
+                    helper: __('For example: "Property of ACME" or "S/N: {serial}". Available fields: %s', 'assetlabel')|format(placeholders),
+                }) }}
+                {{ fields.checkboxField('show_logo', settings.show_logo, __('Logo', 'assetlabel')) }}
+                {{ fields.fileField('logo', null, __('Upload a logo', 'assetlabel'), {
+                    simple: true,
+                    additional_attributes: {accept: 'image/png,image/jpeg,image/gif,image/webp'},
+                    helper: __('PNG, JPEG, GIF or WebP, at most 2 MB. It is converted to grayscale.', 'assetlabel'),
+                }) }}
+                {% if has_logo %}
+                    {{ fields.checkboxField('delete_logo', 0, __('Delete the current logo', 'assetlabel')) }}
+                {% endif %}
+
+                {{ fields.smallTitle(__('Output', 'assetlabel'), 'ti ti-printer') }}
+                {{ fields.dropdownArrayField('format', settings.format, formats, __('Label type', 'assetlabel')) }}
+                {{ fields.numberField('continuous_length', settings.continuous_length, __('Label length on continuous tape (mm)', 'assetlabel'), {
+                    min: length_min,
+                    max: length_max,
+                    step: 1,
+                    helper: __('Used only with continuous tapes.', 'assetlabel'),
+                }) }}
+                {{ fields.dropdownArrayField('default_output', settings.default_output, outputs, __('Default format', 'assetlabel')) }}
+                {{ fields.checkboxField('sharp_text', settings.sharp_text, __('Sharp text (no anti-aliasing)', 'assetlabel'), {
+                    helper: __('Pure black text without gray edges; can look crisper on thermal printers.', 'assetlabel'),
+                }) }}
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="ti ti-device-floppy"></i>
+                    <span>{{ _x('button', 'Save') }}</span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            {{ fields.smallTitle(__('Preview', 'assetlabel'), 'ti ti-eye') }}
+            {# Shown at the label's real size (CSS millimetres, close to real on a standard monitor at 100 % zoom) #}
+            <div class="overflow-auto">
+                <img src="{{ preview_url }}?output=png" alt="{{ __('Label preview', 'assetlabel') }}"
+                     class="border" style="width: {{ label_width_mm }}mm; max-width: none;">
+            </div>
+            <div class="text-muted small my-2">{{ format_name }}</div>
+            <a href="{{ preview_url }}?output=pdf&amp;frame=1" target="_blank" class="btn btn-outline-secondary">
+                <i class="ti ti-printer"></i>
+                <span>{{ __('Printer test (PDF with safe area frame)', 'assetlabel') }}</span>
+            </a>
+        </div>
+    </div>
+{% endblock content_body %}

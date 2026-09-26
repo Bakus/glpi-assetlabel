@@ -1,0 +1,38 @@
+{#
+ # Asset Label - QR code inventory labels for GLPI on Brother QL printers.
+ #
+ # @author  Krzysztof Andrzej Błachut vel Bakus
+ # @license 0BSD
+ # @link    https://github.com/Bakus/glpi-assetlabel
+ #}
+
+{% extends 'layout/page_without_tabs.html.twig' %}
+
+{% set container_size = 'narrow' %}
+
+{% block content_title %}
+    {{ title }}
+{% endblock content_title %}
+
+{% block content_body %}
+    <div class="card">
+        <div class="card-body">
+            <p>{{ __('The download should start automatically. If it does not, use the button below.', 'assetlabel') }}</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ download_url }}" class="btn btn-primary">
+                    <i class="ti ti-download"></i>
+                    <span>{{ __('Download %s', 'assetlabel')|format(filename) }}</span>
+                </a>
+                {% if back_url is not empty %}
+                    <a href="{{ back_url }}" class="btn btn-outline-secondary">
+                        <i class="ti ti-arrow-left"></i>
+                        <span>{{ __('Back') }}</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        window.location.href = {{ download_url|json_encode|raw }};
+    </script>
+{% endblock content_body %}
