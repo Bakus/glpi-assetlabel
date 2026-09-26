@@ -1,43 +1,61 @@
 name: Release
 
-# Pushing a tag vX.Y.Z builds assetlabel-X.Y.Z.tar.gz (plugin files in an assetlabel/
-# directory, as GLPI and the Marketplace expect) and publishes a GitHub release with it.
-# The release notes are the message of the annotated tag.
+# Builds assetlabel-X.Y.Z.tar.gz (plugin files in an assetlabel/ directory, as GLPI and
+# the Marketplace expect) for a tag vX.Y.Z and attaches it to the GitHub release.
+# Runs when a tag is pushed, or manually from the Actions tab for an existing tag.
+# An existing release only gets the archive (its notes stay as they are); a new release
+# takes its notes from the annotated tag message.
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag, e.g. v0.2.0'
+        required: true
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
 
       # actions/checkout stores the tag without its annotation; fetch it again to keep the notes
-      - name: Fetch annotated tag
-        run: git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+      - name: Fetch tag
+        run: git fetch --force origin "refs/tags/${TAG}:refs/tags/${TAG}"
 
       - name: Check version numbers
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           grep -q "PLUGIN_ASSETLABEL_VERSION = '${version}'" setup.php \
             || { echo "::error::setup.php does not declare version ${version}"; exit 1; }
           grep -q "<num>${version}</num>" assetlabel.xml \
             || { echo "::error::assetlabel.xml has no <version> entry for ${version}"; exit 1; }
 
       - name: Build archive
-        run: git archive --format=tar.gz --prefix=assetlabel/ -o "assetlabel-${GITHUB_REF_NAME#v}.tar.gz" "${GITHUB_REF_NAME}"
+        run: |
+          git archive --format=tar.gz --prefix=assetlabel/ -o "assetlabel-${TAG#v}.tar.gz" "${TAG}" -- . \
+            ':(exclude).github' ':(exclude).gitignore' ':(exclude).gitattributes'
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" "assetlabel-${GITHUB_REF_NAME#v}.tar.gz" \
-            --title "Asset Label ${GITHUB_REF_NAME#v}" \
-            --notes-from-tag \
-            --verify-tag
+          archive="assetlabel-${TAG#v}.tar.gz"
+          if gh release view "${TAG}" > /dev/null 2>&1; then
+            gh release upload "${TAG}" "${archive}" --clobber
+          elif [ "$(git cat-file -t "${TAG}")" = tag ]; then
+            gh release create "${TAG}" "${archive}" --title "${TAG}" --notes-from-tag --verify-tag
+          else
+            gh release create "${TAG}" "${archive}" --title "${TAG}" --generate-notes --verify-tag
+          fi
