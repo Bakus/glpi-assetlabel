@@ -1,5 +1,7 @@
 # Asset Label - GLPI plugin
 
+[![Release](https://github.com/Bakus/glpi-assetlabel/actions/workflows/release.yml/badge.svg)](https://github.com/Bakus/glpi-assetlabel/actions/workflows/release.yml)
+
 Prints QR code inventory labels for GLPI assets on Brother QL labels, designed for the
 **Brother QL-810W** (300 dpi). Labels are black & white / grayscale.
 
