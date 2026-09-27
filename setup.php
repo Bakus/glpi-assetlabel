@@ -14,7 +14,7 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\Assetlabel\LabelTab;
 use GlpiPlugin\Assetlabel\Settings;
 
-const PLUGIN_ASSETLABEL_VERSION = '0.3.0';
+const PLUGIN_ASSETLABEL_VERSION = '0.3.1';
 
 /**
  * Plugin metadata and requirements read by GLPI's plugin manager.
