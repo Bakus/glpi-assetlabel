@@ -19,16 +19,21 @@ use Glpi\Exception\Http\BadRequestHttpException;
 use Glpi\Exception\Http\NotFoundHttpException;
 use Glpi\Http\Firewall;
 use Glpi\Security\Attribute\SecurityStrategy;
+use GlpiPlugin\Assetlabel\LabelException;
 use GlpiPlugin\Assetlabel\LabelFactory;
 use GlpiPlugin\Assetlabel\LabelFile;
+use GlpiPlugin\Assetlabel\LabelPrinter;
 use GlpiPlugin\Assetlabel\Settings;
+use Session;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Label of a single item, returned directly (PDF shown inline, PNG downloaded).
+ * Label of a single item: returned directly (PDF shown inline, PNG downloaded) or sent to the printer.
  */
+#[SecurityStrategy(Firewall::STRATEGY_CENTRAL_ACCESS)]
 final class LabelController extends AbstractController
 {
     /**
@@ -42,30 +47,19 @@ final class LabelController extends AbstractController
      * @throws BadRequestHttpException when the output is unknown
      * @throws NotFoundHttpException when the ID is invalid or the item type is not enabled
      * @throws AccessDeniedHttpException when the user cannot read the item
-     * @throws \GlpiPlugin\Assetlabel\LabelException when the label cannot be rendered
+     * @throws LabelException when the label cannot be rendered
      */
     #[Route('/label', name: 'label', methods: 'GET')]
-    #[SecurityStrategy(Firewall::STRATEGY_CENTRAL_ACCESS)]
-    public function __invoke(Request $request): Response
+    public function download(Request $request): Response
     {
         $settings = Settings::load();
-        $itemtype = $request->query->getString('itemtype');
-        $id       = $request->query->getInt('id');
         $output   = $request->query->getString('output', 'pdf');
         $preview  = $request->query->getBoolean('preview');
 
         if (!array_key_exists($output, Settings::OUTPUTS)) {
             throw new BadRequestHttpException();
         }
-        if ($id <= 0 || !$settings->isEnabled($itemtype)) {
-            throw new NotFoundHttpException();
-        }
-
-        /** @var CommonDBTM $item */
-        $item = new $itemtype();
-        if (!$item->can($id, READ)) {
-            throw new AccessDeniedHttpException();
-        }
+        $item = self::getItem($settings, $request->query->getString('itemtype'), $request->query->getInt('id'));
 
         $factory = new LabelFactory($settings);
         $image   = $factory->render($item);
@@ -75,5 +69,65 @@ final class LabelController extends AbstractController
             return LabelFile::response(LabelFile::pdf([$image], $factory->format), $filename, true);
         }
         return LabelFile::response(LabelFile::png($image), $filename, $preview);
+    }
+
+    /**
+     * Sends the label of the item to the printer, then goes back to the item with a message
+     * saying whether it worked.
+     *
+     * @param Request $request form: `itemtype`, `id`
+     *
+     * @return Response
+     *
+     * @throws NotFoundHttpException when direct printing is off, the ID is invalid or the item type
+     *                               is not enabled
+     * @throws AccessDeniedHttpException when the user cannot read the item
+     */
+    #[Route('/print', name: 'print', methods: 'POST')]
+    public function print(Request $request): Response
+    {
+        $settings = Settings::load();
+        if (!$settings->printer_enabled) {
+            throw new NotFoundHttpException();
+        }
+        $item = self::getItem($settings, $request->request->getString('itemtype'), $request->request->getInt('id'));
+
+        try {
+            $factory = new LabelFactory($settings);
+            $name    = LabelFactory::getFileBaseName($item);
+            LabelPrinter::fromSettings($settings)
+                ->printLabels([$factory->render($item)], $factory->format, $settings->format, $name);
+            Session::addMessageAfterRedirect(__s('The label has been sent to the printer.', 'assetlabel'));
+        } catch (LabelException $e) {
+            Session::addMessageAfterRedirect(htmlescape($e->getMessage()), false, ERROR);
+        }
+
+        return new RedirectResponse($item::getFormURLWithID($item->getID()));
+    }
+
+    /**
+     * Loads an item after checking that its type is enabled and that the user can read it.
+     *
+     * @param Settings $settings plugin settings
+     * @param string   $itemtype item type class name
+     * @param int      $id       item ID
+     *
+     * @return CommonDBTM item loaded from the database
+     *
+     * @throws NotFoundHttpException when the ID is invalid or the item type is not enabled
+     * @throws AccessDeniedHttpException when the user cannot read the item
+     */
+    private static function getItem(Settings $settings, string $itemtype, int $id): CommonDBTM
+    {
+        if ($id <= 0 || !$settings->isEnabled($itemtype)) {
+            throw new NotFoundHttpException();
+        }
+
+        /** @var CommonDBTM $item */
+        $item = new $itemtype();
+        if (!$item->can($id, READ)) {
+            throw new AccessDeniedHttpException();
+        }
+        return $item;
     }
 }

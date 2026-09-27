@@ -40,6 +40,14 @@ interface LabelFormat
     public function getHeightMm(): float;
 
     /**
+     * Tape width across the print head, in mm. When it is not the width as read,
+     * the label is printed rotated by 90 degrees.
+     *
+     * @return float
+     */
+    public function getTapeWidthMm(): float;
+
+    /**
      * Rendering resolution; should match the printer's native resolution.
      *
      * @return int dots per inch

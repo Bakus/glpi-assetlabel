@@ -15,7 +15,7 @@ namespace GlpiPlugin\Assetlabel;
 use Glpi\Exception\Http\BadRequestHttpException;
 
 /**
- * A label cannot be generated; the message is translated and safe to show to the user.
+ * A label cannot be generated or printed; the message is translated and safe to show to the user.
  */
 final class LabelException extends BadRequestHttpException
 {

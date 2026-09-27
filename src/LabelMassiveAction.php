@@ -18,14 +18,15 @@ use Html;
 use MassiveAction;
 
 /**
- * "Print labels" bulk action: one PDF (one label per page) or a ZIP of PNG files.
+ * "Print labels" bulk action: one PDF (one label per page), a ZIP of PNG files, or one print job
+ * sent directly to the printer.
  */
 final class LabelMassiveAction
 {
     public const ACTION = 'print';
 
     /**
-     * Displays the output choice (PDF or PNG) of the massive action form.
+     * Displays the output choice (PDF, PNG or printer) of the massive action form.
      *
      * @param MassiveAction $ma current massive action
      *
@@ -33,9 +34,10 @@ final class LabelMassiveAction
      */
     public static function showMassiveActionsSubForm(MassiveAction $ma): bool
     {
+        $settings = Settings::load();
         TemplateRenderer::getInstance()->display('@assetlabel/massive_action.html.twig', [
-            'outputs'        => Settings::OUTPUTS,
-            'default_output' => Settings::load()->default_output,
+            'outputs'        => $settings->getOutputs(),
+            'default_output' => $settings->default_output,
         ]);
         return true;
     }
@@ -81,9 +83,10 @@ final class LabelMassiveAction
     }
 
     /**
-     * Renders the labels of all selected items into one file and stores it as a Batch.
-     * Items of disabled types, items without READ right and items whose label fails are
-     * reported as failed. Requires an active session.
+     * Renders the labels of all selected items into one file and stores it as a Batch, or sends
+     * them to the printer as one job. Items of disabled types, items without READ right and
+     * items whose label fails are reported as failed; when the print job fails, all items are.
+     * Requires an active session.
      *
      * @param MassiveAction $ma current massive action
      *
@@ -96,7 +99,7 @@ final class LabelMassiveAction
         $settings = Settings::load();
         $factory  = new LabelFactory($settings);
         $output   = $ma->getInput()['output'] ?? 'pdf';
-        $valid_output = is_string($output) && array_key_exists($output, Settings::OUTPUTS);
+        $valid_output = is_string($output) && array_key_exists($output, $settings->getOutputs());
 
         $images   = [];
         $messages = [];
@@ -123,7 +126,31 @@ final class LabelMassiveAction
         }
 
         $redirect = null;
-        if ($images !== []) {
+        if ($images !== [] && $output === Settings::OUTPUT_PRINTER) {
+            try {
+                LabelPrinter::fromSettings($settings)
+                    ->printLabels(array_values($images), $factory->format, $settings->format, 'labels');
+                $count = count($images);
+                $messages[] = htmlescape(sprintf(
+                    _n(
+                        '%d label has been sent to the printer.',
+                        '%d labels have been sent to the printer.',
+                        $count,
+                        'assetlabel',
+                    ),
+                    $count,
+                ));
+            } catch (LabelException $e) {
+                $messages[] = htmlescape($e->getMessage());
+                foreach ($results as $itemtype => $statuses) {
+                    $results[$itemtype][MassiveAction::ACTION_KO] = array_merge(
+                        $statuses[MassiveAction::ACTION_KO] ?? [],
+                        $statuses[MassiveAction::ACTION_OK] ?? [],
+                    );
+                    unset($results[$itemtype][MassiveAction::ACTION_OK]);
+                }
+            }
+        } elseif ($images !== []) {
             if ($output === 'pdf') {
                 $content  = LabelFile::pdf(array_values($images), $factory->format);
                 $filename = 'labels.pdf';

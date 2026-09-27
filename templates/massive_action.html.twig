@@ -19,4 +19,7 @@
 </div>
 <div class="form-text">
     {{ __('PDF: one label per page. PNG: several labels are packed in a ZIP archive.', 'assetlabel') }}
+    {% if outputs.printer is defined %}
+        {{ __('Printer: all labels are sent to the printer as one job.', 'assetlabel') }}
+    {% endif %}
 </div>

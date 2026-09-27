@@ -22,7 +22,7 @@ final class Dk22210 extends ContinuousTape
      *
      * @return float
      */
-    protected function getTapeWidthMm(): float
+    public function getTapeWidthMm(): float
     {
         return 29.0;
     }

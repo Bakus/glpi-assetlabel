@@ -50,7 +50,7 @@ abstract class ContinuousTape implements LabelFormat
      *
      * @return float
      */
-    abstract protected function getTapeWidthMm(): float;
+    abstract public function getTapeWidthMm(): float;
 
     /**
      * Label length along the tape, in mm.

@@ -37,10 +37,14 @@ final readonly class Settings
      */
     public const QR_ECC           = 'M';
     public const OUTPUTS          = ['pdf' => 'PDF', 'png' => 'PNG'];
+    public const OUTPUT_PRINTER   = 'printer';
+    public const CUTS             = ['label', 'job', 'none'];
+    public const QUALITIES        = ['normal', 'high'];
     public const EXTRA_TEXT_MAX   = 100;
     public const LENGTH_MIN_MM    = 20;
     public const LENGTH_MAX_MM    = 100;
     public const TEMPLATE_MAX     = 500;
+    public const HOST_MAX         = 253;
 
     /**
      * @param list<class-string> $itemtypes         item types labels can be printed for
@@ -55,8 +59,13 @@ final readonly class Settings
      * @param bool               $show_extra        print the additional label
      * @param bool               $show_logo         print the logo
      * @param string             $extra_text        additional label template (Placeholders)
-     * @param string             $default_output    default output, a key of OUTPUTS
+     * @param string             $default_output    default output, a key of getOutputs()
      * @param bool               $sharp_text        draw text without anti-aliasing
+     * @param bool               $printer_enabled   send labels directly to the printer over IPP
+     * @param string             $printer_host      IP address or host name of the printer
+     * @param string             $printer_cut       when the printer cuts: after each label, after the job or never
+     *                                              (one of CUTS)
+     * @param string             $printer_quality   print quality, one of QUALITIES
      */
     public function __construct(
         public array $itemtypes,
@@ -73,6 +82,10 @@ final readonly class Settings
         public string $extra_text,
         public string $default_output,
         public bool $sharp_text,
+        public bool $printer_enabled,
+        public string $printer_host,
+        public string $printer_cut,
+        public string $printer_quality,
     ) {
     }
 
@@ -105,6 +118,10 @@ final readonly class Settings
             extra_text: '',
             default_output: 'pdf',
             sharp_text: false,
+            printer_enabled: false,
+            printer_host: '',
+            printer_cut: 'label',
+            printer_quality: 'normal',
         );
     }
 
@@ -156,6 +173,16 @@ final readonly class Settings
             ? self::QR_MODE_URL
             : $pick('qr_mode', [self::QR_MODE_URL, self::QR_MODE_TEMPLATE]);
 
+        $printer_host = $text('printer_host', self::HOST_MAX);
+        if (!self::isValidHost($printer_host)) {
+            $printer_host = $defaults->printer_host;
+        }
+        $printer_enabled = $bool('printer_enabled') && $printer_host !== '';
+        $outputs = array_keys(self::OUTPUTS);
+        if ($printer_enabled) {
+            $outputs[] = self::OUTPUT_PRINTER;
+        }
+
         return new self(
             itemtypes: $itemtypes,
             format: $pick('format', array_keys(FormatRegistry::all())),
@@ -171,8 +198,12 @@ final readonly class Settings
             show_extra: $bool('show_extra'),
             show_logo: $bool('show_logo'),
             extra_text: $text('extra_text', self::EXTRA_TEXT_MAX),
-            default_output: $pick('default_output', array_keys(self::OUTPUTS)),
+            default_output: $pick('default_output', $outputs),
             sharp_text: $bool('sharp_text'),
+            printer_enabled: $printer_enabled,
+            printer_host: $printer_host,
+            printer_cut: $pick('printer_cut', self::CUTS),
+            printer_quality: $pick('printer_quality', self::QUALITIES),
         );
     }
 
@@ -198,6 +229,10 @@ final readonly class Settings
             'extra_text'        => $this->extra_text,
             'default_output'    => $this->default_output,
             'sharp_text'        => (int) $this->sharp_text,
+            'printer_enabled'   => (int) $this->printer_enabled,
+            'printer_host'      => $this->printer_host,
+            'printer_cut'       => $this->printer_cut,
+            'printer_quality'   => $this->printer_quality,
         ];
     }
 
@@ -212,6 +247,34 @@ final readonly class Settings
     {
         return in_array($itemtype, $this->itemtypes, true)
             && is_a($itemtype, CommonDBTM::class, true);
+    }
+
+    /**
+     * Outputs offered to users: the file formats, plus the printer when direct printing is enabled.
+     *
+     * @return array<string, string> output => display name
+     */
+    public function getOutputs(): array
+    {
+        $outputs = self::OUTPUTS;
+        if ($this->printer_enabled) {
+            $outputs[self::OUTPUT_PRINTER] = __('Printer', 'assetlabel');
+        }
+        return $outputs;
+    }
+
+    /**
+     * Whether the value is an empty string, an IP address or a host name.
+     *
+     * @param string $host value to check
+     *
+     * @return bool
+     */
+    public static function isValidHost(string $host): bool
+    {
+        return $host === ''
+            || filter_var($host, FILTER_VALIDATE_IP) !== false
+            || filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) !== false;
     }
 
     /**

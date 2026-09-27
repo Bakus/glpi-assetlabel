@@ -18,7 +18,8 @@ use Glpi\Application\View\TemplateRenderer;
 use Html;
 
 /**
- * "Label" tab on asset forms: preview and download of the item's label.
+ * "Label" tab on asset forms: preview and download of the item's label and, with direct printing,
+ * a print button.
  */
 final class LabelTab extends CommonGLPI
 {
@@ -61,7 +62,8 @@ final class LabelTab extends CommonGLPI
     }
 
     /**
-     * Displays the label preview and the download form of the item.
+     * Displays the label preview, the download form of the item and, with direct printing,
+     * the print button.
      *
      * @param CommonGLPI $item         item whose form is displayed
      * @param int        $tabnum       tab number (unused)
@@ -86,6 +88,7 @@ final class LabelTab extends CommonGLPI
             'preview_url'    => $url . '?' . http_build_query($query + ['output' => 'png', 'preview' => 1]),
             'outputs'        => Settings::OUTPUTS,
             'default_output' => $settings->default_output,
+            'print_url'      => $settings->printer_enabled ? Html::getPrefixedUrl('/plugins/assetlabel/print') : null,
             'format_name'    => $factory->getFormatCaption(),
             'label_width_mm' => $factory->format->getWidthMm(),
         ]);

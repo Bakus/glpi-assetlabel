@@ -34,42 +34,119 @@
                 {{ fields.dropdownArrayField('qr_mode', settings.qr_mode, {
                     'url': __('Link to the item in GLPI', 'assetlabel'),
                     'template': __('Custom template', 'assetlabel'),
-                }, __('QR code content', 'assetlabel')) }}
+                }, __('QR code content', 'assetlabel'), {full_width: true}) }}
                 {{ fields.textField('qr_template', settings.qr_template, __('Template', 'assetlabel'), {
+                    full_width: true,
                     helper: __('Used with "Custom template". Available fields: %s', 'assetlabel')|format(placeholders),
                 }) }}
 
                 {{ fields.smallTitle(__('Label content', 'assetlabel'), 'ti ti-list-details') }}
-                {{ fields.checkboxField('show_name', settings.show_name, __('Name')) }}
-                {{ fields.checkboxField('show_otherserial', settings.show_otherserial, __('Inventory number')) }}
-                {{ fields.checkboxField('show_type', settings.show_type, __('Item type')) }}
-                {{ fields.checkboxField('show_entity', settings.show_entity, _n('Entity', 'Entities', 1)) }}
-                {{ fields.checkboxField('show_extra', settings.show_extra, __('Additional label', 'assetlabel')) }}
+                {{ fields.checkboxField('show_name', settings.show_name, __('Name'), {full_width: true}) }}
+                {{ fields.checkboxField('show_otherserial', settings.show_otherserial, __('Inventory number'), {full_width: true}) }}
+                {{ fields.checkboxField('show_type', settings.show_type, __('Item type'), {full_width: true}) }}
+                {{ fields.checkboxField('show_entity', settings.show_entity, _n('Entity', 'Entities', 1), {full_width: true}) }}
+                {{ fields.checkboxField('show_extra', settings.show_extra, __('Additional label', 'assetlabel'), {full_width: true}) }}
                 {{ fields.textField('extra_text', settings.extra_text, __('Additional label', 'assetlabel'), {
+                    full_width: true,
                     maxlength: extra_text_max,
                     helper: __('For example: "Property of ACME" or "S/N: {serial}". Available fields: %s', 'assetlabel')|format(placeholders),
                 }) }}
-                {{ fields.checkboxField('show_logo', settings.show_logo, __('Logo', 'assetlabel')) }}
+                {{ fields.checkboxField('show_logo', settings.show_logo, __('Logo', 'assetlabel'), {full_width: true}) }}
                 {{ fields.fileField('logo', null, __('Upload a logo', 'assetlabel'), {
+                    full_width: true,
                     simple: true,
                     additional_attributes: {accept: 'image/png,image/jpeg,image/gif,image/webp'},
                     helper: __('PNG, JPEG, GIF or WebP, at most 2 MB. It is converted to grayscale.', 'assetlabel'),
                 }) }}
                 {% if has_logo %}
-                    {{ fields.checkboxField('delete_logo', 0, __('Delete the current logo', 'assetlabel')) }}
+                    {{ fields.checkboxField('delete_logo', 0, __('Delete the current logo', 'assetlabel'), {full_width: true}) }}
                 {% endif %}
 
                 {{ fields.smallTitle(__('Output', 'assetlabel'), 'ti ti-printer') }}
-                {{ fields.dropdownArrayField('format', settings.format, formats, __('Label type', 'assetlabel')) }}
+                {{ fields.dropdownArrayField('format', settings.format, formats, __('Label type', 'assetlabel'), {full_width: true}) }}
+                {% set read_media %}
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="assetlabel_read_media" disabled>
+                        <i class="ti ti-refresh"></i>
+                        <span>{{ __('Read the loaded paper from the printer', 'assetlabel') }}</span>
+                    </button>
+                    <span class="ms-2" id="assetlabel_media_result" role="status"></span>
+                {% endset %}
+                {{ fields.htmlField('', read_media, __('Loaded paper', 'assetlabel'), {
+                    full_width: true,
+                    helper: __('Selects the label type matching the paper loaded in the printer (needs the printer address below).', 'assetlabel'),
+                }) }}
                 {{ fields.numberField('continuous_length', settings.continuous_length, __('Label length on continuous tape (mm)', 'assetlabel'), {
+                    full_width: true,
                     min: length_min,
                     max: length_max,
                     step: 1,
                     helper: __('Used only with continuous tapes.', 'assetlabel'),
                 }) }}
-                {{ fields.dropdownArrayField('default_output', settings.default_output, outputs, __('Default format', 'assetlabel')) }}
+                {{ fields.dropdownArrayField('default_output', settings.default_output, outputs, __('Default format', 'assetlabel'), {full_width: true}) }}
                 {{ fields.checkboxField('sharp_text', settings.sharp_text, __('Sharp text (no anti-aliasing)', 'assetlabel'), {
+                    full_width: true,
                     helper: __('Pure black text without gray edges; can look crisper on thermal printers.', 'assetlabel'),
+                }) }}
+
+                {{ fields.smallTitle(__('AirPrint direct printing', 'assetlabel'), 'ti ti-send') }}
+                {% set requirements_html %}
+                    <ul class="list-unstyled mb-1">
+                        {% for requirement in requirements %}
+                            <li>
+                                {% if requirement.ok %}
+                                    <i class="ti ti-circle-check text-success" title="{{ __('Available', 'assetlabel') }}"></i>
+                                {% else %}
+                                    <i class="ti ti-circle-x text-danger" title="{{ __('Missing', 'assetlabel') }}"></i>
+                                {% endif %}
+                                {{ requirement.label }}
+                            </li>
+                        {% endfor %}
+                        <li>
+                            <i class="ti ti-help-circle text-muted"></i>
+                            {{ __('Network printer with AirPrint (IPP on port 631), reachable from the GLPI server: check it with "Test connection"', 'assetlabel') }}
+                        </li>
+                    </ul>
+                    <div class="text-muted small">
+                        {{ __('No printer driver or other program is needed on the server.', 'assetlabel') }}
+                    </div>
+                {% endset %}
+                {{ fields.htmlField('', requirements_html, __('Requirements', 'assetlabel'), {
+                    full_width: true,
+                    add_label_class: 'align-self-start',
+                }) }}
+                {{ fields.checkboxField('printer_enabled', settings.printer_enabled, __('Send labels to the printer', 'assetlabel'), {
+                    full_width: true,
+                    helper: __('Adds "Printer" to the outputs of the label tab and of the bulk action; PDF and PNG stay available.', 'assetlabel'),
+                }) }}
+                {% set host_html %}
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="printer_host" id="assetlabel_printer_host"
+                               value="{{ settings.printer_host }}" maxlength="{{ host_max }}" placeholder="192.168.1.50"
+                               autocomplete="off" spellcheck="false">
+                        <button type="button" class="btn btn-outline-secondary" id="assetlabel_test_printer" disabled>
+                            <i class="ti ti-plug-connected"></i>
+                            <span>{{ __('Test connection', 'assetlabel') }}</span>
+                        </button>
+                    </div>
+                    <div id="assetlabel_printer_result" class="mt-2" role="status"></div>
+                {% endset %}
+                {{ fields.htmlField('printer_host', host_html, __('Printer address', 'assetlabel'), {
+                    full_width: true,
+                    add_label_class: 'align-self-start',
+                    id: 'assetlabel_printer_host',
+                    wrapper_class: 'd-block',
+                    helper: __('IP address or host name of the printer. It is used by the GLPI server, not by the browser.', 'assetlabel'),
+                }) }}
+                {% set support_note = '<div class="small text-warning mt-1" data-assetlabel-note role="status"></div>' %}
+                {{ fields.dropdownArrayField('printer_cut', settings.printer_cut, cuts, __('Cutting', 'assetlabel'), {
+                    full_width: true,
+                    add_field_html: support_note,
+                    helper: __('"Once, after the last label" gives one strip with all the labels: handy with die-cut labels, which peel off the strip, but on continuous tape the labels then have to be cut by hand. Used when the printer supports it (see "Test connection").', 'assetlabel'),
+                }) }}
+                {{ fields.dropdownArrayField('printer_quality', settings.printer_quality, qualities, __('Print quality', 'assetlabel'), {
+                    full_width: true,
+                    add_field_html: support_note,
+                    helper: __('Used when the printer supports it (see "Test connection").', 'assetlabel'),
                 }) }}
             </div>
             <div class="card-footer">
@@ -96,4 +173,110 @@
             </a>
         </div>
     </div>
+
+    <script>
+        (() => {
+            const host = document.getElementById('assetlabel_printer_host');
+            const test = document.getElementById('assetlabel_test_printer');
+            const readMedia = document.getElementById('assetlabel_read_media');
+            const url = {{ printer_url|json_encode|raw }};
+
+            const updateButtons = () => {
+                test.disabled = readMedia.disabled = host.value.trim() === '';
+            };
+            host.addEventListener('input', updateButtons);
+            updateButtons();
+
+            // Asks the server to query the printer at the typed address
+            const query = async (button) => {
+                button.disabled = true;
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: new URLSearchParams({host: host.value.trim()}),
+                    });
+                    if (!response.ok) {
+                        throw new Error();
+                    }
+                    return await response.json();
+                } catch (e) {
+                    return {ok: false, message: {{ __('The request failed. Reload the page and try again.', 'assetlabel')|json_encode|raw }}};
+                } finally {
+                    updateButtons();
+                }
+            };
+
+            const alertBox = (type, text) => {
+                const div = document.createElement('div');
+                div.className = 'alert alert-' + type + ' mb-0 mt-2';
+                div.textContent = text;
+                return div;
+            };
+
+            // Warns under a field when its selected value is not supported by the printer
+            const markSupport = (supported) => {
+                for (const [name, values] of Object.entries(supported)) {
+                    const select = document.querySelector('select[name="' + name + '"]');
+                    const note = select.closest('.form-field').querySelector('[data-assetlabel-note]');
+                    const update = () => {
+                        note.textContent = values.includes(select.value)
+                            ? ''
+                            : {{ __('The printer does not support this setting and will use its own default.', 'assetlabel')|json_encode|raw }};
+                    };
+                    $(select).off('change.assetlabel').on('change.assetlabel', update);
+                    update();
+                }
+            };
+
+            const runTest = async () => {
+                const result = document.getElementById('assetlabel_printer_result');
+                result.className = 'mt-2 text-muted';
+                result.textContent = {{ __('Connecting to the printer...', 'assetlabel')|json_encode|raw }};
+                const data = await query(test);
+                result.className = 'mt-2';
+                result.replaceChildren();
+                if (!data.ok) {
+                    result.append(alertBox('danger', data.message));
+                    return;
+                }
+                const table = document.createElement('table');
+                table.className = 'table table-sm w-auto mb-0';
+                for (const [label, value] of data.rows) {
+                    const row = table.insertRow();
+                    const th = document.createElement('th');
+                    th.textContent = label;
+                    row.append(th);
+                    const cell = row.insertCell();
+                    cell.textContent = value;
+                    cell.style.whiteSpace = 'pre-line'; // lists come one item per line
+                }
+                result.append(table);
+                if (data.warning) {
+                    result.append(alertBox('warning', data.warning));
+                }
+                markSupport(data.supported);
+            };
+            test.addEventListener('click', runTest);
+            // With a saved address, test the printer as soon as the page is shown
+            if (host.value.trim() !== '') {
+                runTest();
+            }
+
+            readMedia.addEventListener('click', async () => {
+                const result = document.getElementById('assetlabel_media_result');
+                result.className = 'ms-2';
+                result.textContent = '';
+                const data = await query(readMedia);
+                if (!data.ok || data.format === null) {
+                    result.className = 'ms-2 text-danger';
+                    result.textContent = data.ok ? data.warning : data.message;
+                    return;
+                }
+                $('select[name="format"]').val(data.format).trigger('change');
+                result.className = 'ms-2 text-success';
+                result.textContent = {{ __('Selected: %s. Save to apply.', 'assetlabel')|json_encode|raw }}
+                    .replace('%s', data.media);
+            });
+        })();
+    </script>
 {% endblock content_body %}

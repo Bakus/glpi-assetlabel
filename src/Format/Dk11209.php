@@ -21,10 +21,10 @@ namespace GlpiPlugin\Assetlabel\Format;
 final class Dk11209 extends DieCutLabel
 {
     /**
-     * Passes the name, size and margins of this label to DieCutLabel.
+     * Passes the name, size, tape width and margins of this label to DieCutLabel.
      */
     public function __construct()
     {
-        parent::__construct('DK-11209 (62 × 29 mm)', 62.0, 29.0, 1.5, 3.0);
+        parent::__construct('DK-11209 (62 × 29 mm)', 62.0, 29.0, 62.0, 1.5, 3.0);
     }
 }

@@ -18,16 +18,18 @@ namespace GlpiPlugin\Assetlabel\Format;
 abstract class DieCutLabel implements LabelFormat
 {
     /**
-     * @param string $name        display name
-     * @param float  $width_mm    width as read, in mm
-     * @param float  $height_mm   height as read, in mm
-     * @param float  $margin_x_mm left and right margin, in mm
-     * @param float  $margin_y_mm top and bottom margin, in mm
+     * @param string $name          display name
+     * @param float  $width_mm      width as read, in mm
+     * @param float  $height_mm     height as read, in mm
+     * @param float  $tape_width_mm tape width across the print head, in mm
+     * @param float  $margin_x_mm   left and right margin, in mm
+     * @param float  $margin_y_mm   top and bottom margin, in mm
      */
     public function __construct(
         private readonly string $name,
         private readonly float $width_mm,
         private readonly float $height_mm,
+        private readonly float $tape_width_mm,
         private readonly float $margin_x_mm,
         private readonly float $margin_y_mm,
     ) {
@@ -61,6 +63,16 @@ abstract class DieCutLabel implements LabelFormat
     public function getHeightMm(): float
     {
         return $this->height_mm;
+    }
+
+    /**
+     * Tape width across the print head, in mm.
+     *
+     * @return float
+     */
+    public function getTapeWidthMm(): float
+    {
+        return $this->tape_width_mm;
     }
 
     /**

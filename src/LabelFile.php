@@ -20,7 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 use ZipArchive;
 
 /**
- * Turns rendered label bitmaps into downloadable files.
+ * Turns rendered label bitmaps into files: PNG, PDF or ZIP to download, URF (AirPrint raster)
+ * for direct printing.
  */
 final class LabelFile
 {
@@ -66,6 +67,88 @@ final class LabelFile
         }
 
         return $pdf->getOutPDFString();
+    }
+
+    /**
+     * AirPrint raster (URF) for direct printing: 8-bit grayscale at the format's resolution,
+     * one page per label. Labels whose width as read is not the tape width are rotated,
+     * because the printer takes the image width as the width across the print head.
+     *
+     * @param list<GdImage> $images label bitmaps (grayscale), one per page
+     * @param LabelFormat   $format format the images were rendered for
+     *
+     * @return string URF document
+     */
+    public static function urf(array $images, LabelFormat $format): string
+    {
+        $rotate = abs($format->getWidthMm() - $format->getTapeWidthMm()) > 0.01;
+
+        $data = "UNIRAST\0" . pack('N', count($images));
+        foreach ($images as $image) {
+            if ($rotate) {
+                $image = imagerotate($image, 90, 0xFFFFFF);
+            }
+            $width  = imagesx($image);
+            $height = imagesy($image);
+            // Page header: 8 bits per pixel, sGray, one-sided, normal quality, size and resolution
+            $data .= pack('C4x8N3x8', 8, 0, 1, 4, $width, $height, $format->getDpi());
+
+            $rows = [];
+            for ($y = 0; $y < $height; $y++) {
+                $row = '';
+                for ($x = 0; $x < $width; $x++) {
+                    // The label is grayscale, so the blue channel is the gray level
+                    $row .= chr(imagecolorat($image, $x, $y) & 0xFF);
+                }
+                $rows[] = $row;
+            }
+            // Each line starts with its repeat count (0-255 extra copies), so blank areas stay small
+            $y = 0;
+            while ($y < $height) {
+                $repeat = 0;
+                while ($repeat < 255 && $y + $repeat + 1 < $height && $rows[$y + $repeat + 1] === $rows[$y]) {
+                    $repeat++;
+                }
+                $data .= chr($repeat) . self::urfLine($rows[$y]);
+                $y += $repeat + 1;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Compresses one URF line: runs of equal pixels (count - 1, pixel) and literal
+     * groups (257 - count, pixels), at most 128 pixels each.
+     *
+     * @param string $pixels one byte per pixel
+     *
+     * @return string
+     */
+    private static function urfLine(string $pixels): string
+    {
+        $data   = '';
+        $length = strlen($pixels);
+        $i      = 0;
+        while ($i < $length) {
+            $run = 1;
+            while ($run < 128 && $i + $run < $length && $pixels[$i + $run] === $pixels[$i]) {
+                $run++;
+            }
+            if ($run > 1) {
+                $data .= chr($run - 1) . $pixels[$i];
+                $i += $run;
+                continue;
+            }
+
+            // Literal pixels up to the next run of two equal pixels
+            $start = $i;
+            do {
+                $i++;
+            } while ($i < $length && $i - $start < 128 && ($i + 1 === $length || $pixels[$i + 1] !== $pixels[$i]));
+            $count = $i - $start;
+            $data .= ($count === 1 ? "\0" : chr(257 - $count)) . substr($pixels, $start, $count);
+        }
+        return $data;
     }
 
     /**

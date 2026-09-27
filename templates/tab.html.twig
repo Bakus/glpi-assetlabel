@@ -27,11 +27,22 @@
                             <option value="{{ value }}" {{ value == default_output ? 'selected' : '' }}>{{ label }}</option>
                         {% endfor %}
                     </select>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn {{ default_output == 'printer' ? 'btn-outline-secondary' : 'btn-primary' }}">
                         <i class="ti ti-download"></i>
                         <span>{{ __('Download label', 'assetlabel') }}</span>
                     </button>
                 </form>
+                {% if print_url is not null %}
+                    <form method="post" action="{{ print_url }}" class="mt-2">
+                        {% for name, value in query %}
+                            <input type="hidden" name="{{ name }}" value="{{ value }}">
+                        {% endfor %}
+                        <button type="submit" class="btn {{ default_output == 'printer' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                            <i class="ti ti-printer"></i>
+                            <span>{{ __('Print on the printer', 'assetlabel') }}</span>
+                        </button>
+                    </form>
+                {% endif %}
             </div>
         </div>
     </div>

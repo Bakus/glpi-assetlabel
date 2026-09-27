@@ -161,3 +161,186 @@ msgstr "Plik logo jest większy niż limit przesyłania na serwerze (%s). Wybier
 
 msgid "The logo could not be uploaded. Try again; if it keeps failing, check the PHP upload settings."
 msgstr "Nie udało się przesłać logo. Spróbuj ponownie, a jeśli błąd się powtarza, sprawdź ustawienia przesyłania plików w PHP."
+
+msgid "AirPrint direct printing"
+msgstr "Druk bezpośredni AirPrint"
+
+msgid "Requirements"
+msgstr "Wymagania"
+
+msgid "Available"
+msgstr "Dostępne"
+
+msgid "Missing"
+msgstr "Brak"
+
+msgid "PHP gd extension with FreeType (renders the labels)"
+msgstr "Rozszerzenie PHP gd z FreeType (rysowanie etykiet)"
+
+msgid "PHP curl extension or allow_url_fopen (IPP requests over HTTP)"
+msgstr "Rozszerzenie PHP curl lub allow_url_fopen (zapytania IPP przez HTTP)"
+
+msgid "Network printer with AirPrint (IPP on port 631), reachable from the GLPI server: check it with \"Test connection\""
+msgstr "Drukarka sieciowa z AirPrint (IPP na porcie 631), osiągalna z serwera GLPI: sprawdź przyciskiem \"Test połączenia\""
+
+msgid "No printer driver or other program is needed on the server."
+msgstr "Na serwerze nie jest potrzebny sterownik drukarki ani inne programy."
+
+msgid "Send labels to the printer"
+msgstr "Wysyłaj etykiety do drukarki"
+
+msgid "Adds \"Printer\" to the outputs of the label tab and of the bulk action; PDF and PNG stay available."
+msgstr "Dodaje \"Drukarka\" do formatów wyjściowych zakładki etykiety i akcji masowej; PDF i PNG pozostają dostępne."
+
+msgid "Printer address"
+msgstr "Adres drukarki"
+
+msgid "IP address or host name of the printer. It is used by the GLPI server, not by the browser."
+msgstr "Adres IP lub nazwa hosta drukarki. Łączy się z nią serwer GLPI, a nie przeglądarka."
+
+msgid "Test connection"
+msgstr "Test połączenia"
+
+msgid "Read the loaded paper from the printer"
+msgstr "Odczytaj włożony papier z drukarki"
+
+msgid "Selects the label type matching the paper loaded in the printer (needs the printer address below)."
+msgstr "Wybiera typ etykiety zgodny z papierem włożonym do drukarki (wymaga adresu drukarki poniżej)."
+
+msgid "Selected: %s. Save to apply."
+msgstr "Wybrano: %s. Zapisz, aby zastosować."
+
+msgid "The request failed. Reload the page and try again."
+msgstr "Zapytanie nie powiodło się. Odśwież stronę i spróbuj ponownie."
+
+msgid "Printer"
+msgstr "Drukarka"
+
+msgid "State"
+msgstr "Stan"
+
+msgid "Loaded paper"
+msgstr "Włożony papier"
+
+msgid "AirPrint raster (image/urf)"
+msgstr "Raster AirPrint (image/urf)"
+
+msgid "ready"
+msgstr "gotowa"
+
+msgid "printing"
+msgstr "drukuje"
+
+msgid "stopped"
+msgstr "zatrzymana"
+
+msgid "unknown"
+msgstr "nieznany"
+
+msgid "%s mm continuous tape"
+msgstr "taśma ciągła %s mm"
+
+msgid "Enter a valid IP address or host name."
+msgstr "Wpisz poprawny adres IP lub nazwę hosta."
+
+msgid "The printer does not accept AirPrint raster images (image/urf), direct printing will not work."
+msgstr "Drukarka nie przyjmuje obrazów rastrowych AirPrint (image/urf), druk bezpośredni nie zadziała."
+
+msgid "No label type of the plugin matches the loaded paper."
+msgstr "Żaden typ etykiety wtyczki nie pasuje do włożonego papieru."
+
+msgid "The printer address is not a valid IP address or host name; it has not been saved."
+msgstr "Adres drukarki nie jest poprawnym adresem IP ani nazwą hosta; nie został zapisany."
+
+msgid "Direct printing needs the printer address, so it has not been enabled."
+msgstr "Druk bezpośredni wymaga adresu drukarki, dlatego nie został włączony."
+
+msgid "Print on the printer"
+msgstr "Drukuj na drukarce"
+
+msgid "The label has been sent to the printer."
+msgstr "Etykieta została wysłana do drukarki."
+
+msgid "%d label has been sent to the printer."
+msgid_plural "%d labels have been sent to the printer."
+msgstr[0] "%d etykieta została wysłana do drukarki."
+msgstr[1] "%d etykiety zostały wysłane do drukarki."
+msgstr[2] "%d etykiet zostało wysłanych do drukarki."
+
+msgid "Printer: all labels are sent to the printer as one job."
+msgstr "Drukarka: wszystkie etykiety trafiają do drukarki jako jedno zadanie."
+
+msgid "The printer sent an invalid IPP response."
+msgstr "Drukarka wysłała nieprawidłową odpowiedź IPP."
+
+msgid "The printer %s does not accept AirPrint raster images (image/urf)."
+msgstr "Drukarka %s nie przyjmuje obrazów rastrowych AirPrint (image/urf)."
+
+msgid "The printer is not ready: %s."
+msgstr "Drukarka nie jest gotowa: %s."
+
+msgid "The loaded paper (%1$s) does not match the label type in the configuration (%2$s)."
+msgstr "Włożony papier (%1$s) nie pasuje do typu etykiety w konfiguracji (%2$s)."
+
+msgid "The printer at %s cannot be reached. Check the address and that the printer is on."
+msgstr "Brak połączenia z drukarką %s. Sprawdź adres i czy drukarka jest włączona."
+
+msgid "The printer at %1$s does not accept IPP requests (HTTP error %2$d)."
+msgstr "Drukarka %1$s nie przyjmuje zapytań IPP (błąd HTTP %2$d)."
+
+msgid "The printer rejected the request: %s"
+msgstr "Drukarka odrzuciła zapytanie: %s"
+
+msgid "8-bit grayscale (W8)"
+msgstr "8-bitowa skala szarości (W8)"
+
+msgid "Resolution"
+msgstr "Rozdzielczość"
+
+msgid "The printer does not accept 8-bit grayscale AirPrint images (W8), direct printing will not work."
+msgstr "Drukarka nie przyjmuje obrazów AirPrint w 8-bitowej skali szarości (W8), druk bezpośredni nie zadziała."
+
+msgid "The printer does not print AirPrint images at %d dpi, direct printing will not work."
+msgstr "Drukarka nie drukuje obrazów AirPrint w rozdzielczości %d dpi, druk bezpośredni nie zadziała."
+
+msgid "The printer %s does not accept 8-bit grayscale AirPrint images (W8)."
+msgstr "Drukarka %s nie przyjmuje obrazów AirPrint w 8-bitowej skali szarości (W8)."
+
+msgid "The printer %1$s does not print AirPrint images at %2$d dpi."
+msgstr "Drukarka %1$s nie drukuje obrazów AirPrint w rozdzielczości %2$d dpi."
+
+msgid "Cutting"
+msgstr "Cięcie"
+
+msgid "Print quality"
+msgstr "Jakość druku"
+
+msgid "After each label"
+msgstr "Po każdej etykiecie"
+
+msgid "Once, after the last label"
+msgstr "Raz, po ostatniej etykiecie"
+
+msgid "Do not cut"
+msgstr "Bez cięcia"
+
+msgid "Normal"
+msgstr "Normalna"
+
+msgid "High (slower)"
+msgstr "Wysoka (wolniej)"
+
+msgid "not supported"
+msgstr "nieobsługiwane"
+
+msgid "\"Once, after the last label\" gives one strip with all the labels: handy with die-cut labels, which peel off the strip, but on continuous tape the labels then have to be cut by hand. Used when the printer supports it (see \"Test connection\")."
+msgstr "\"Raz, po ostatniej etykiecie\" daje jeden pasek ze wszystkimi etykietami: wygodne przy etykietach wstępnie wyciętych, które odkleja się z paska, ale na taśmie ciągłej etykiety trzeba potem rozciąć ręcznie. Stosowane, gdy drukarka je obsługuje (zobacz \"Test połączenia\")."
+
+msgid "Used when the printer supports it (see \"Test connection\")."
+msgstr "Stosowane, gdy drukarka je obsługuje (zobacz \"Test połączenia\")."
+
+msgid "The printer does not support this setting and will use its own default."
+msgstr "Drukarka nie obsługuje tego ustawienia i użyje własnego ustawienia domyślnego."
+
+msgid "Connecting to the printer..."
+msgstr "Łączenie z drukarką..."

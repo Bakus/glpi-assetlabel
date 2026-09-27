@@ -12,7 +12,8 @@ Supported label types:
 - continuous tapes: **DK-22205** (62 mm) and **DK-22210** (29 mm), with the label length set in the configuration (20-100 mm).
   Labels longer than the tape width are laid out in landscape.
 
-- GLPI **12.0.x**, PHP **8.3 - 8.5** (extensions: gd with FreeType, zip)
+- GLPI **12.0.x**, PHP **8.3 - 8.5** (extensions: gd with FreeType, zip; for direct printing
+  also curl or `allow_url_fopen`)
 - No database tables: settings are stored in GLPI's configuration
 
 ## Features
@@ -20,6 +21,8 @@ Supported label types:
 - **Label tab** on every enabled item type: preview + download as PDF or PNG.
 - **Bulk action** "Print labels" on item lists: one multi-page PDF (one label per page)
   or PNG files (ZIP archive for several labels).
+- **Direct printing** (optional): labels are sent straight to a network printer over IPP,
+  without a print dialog or driver settings.
 - **QR code content**: link to the item in GLPI, or a custom template using
   `{id} {name} {otherserial} {serial} {itemtype} {type} {entity} {url}`.
 - **Label content** (each can be switched on/off): name, inventory number, item type,
@@ -68,13 +71,37 @@ There are no plugin-specific rights:
   gray frame should sit fully inside the label. The margins are defined in the format
   classes in `src/Format/`.
 
+## Direct printing
+
+Direct printing is off by default. Turn it on in the configuration (*AirPrint direct printing >
+Send labels to the printer*) and enter the printer's IP address or host name; *Test connection* shows the printer model, its state and the
+loaded paper. The label tab then gets a *Print on the printer* button, and the bulk action and the
+default format get a *Printer* output. PDF and PNG stay available.
+
+- The GLPI server connects to the printer (IPP on port 631, path `/ipp/print`), so the printer must
+  be reachable from the server, not only from the users' computers.
+- The printer must support AirPrint raster (`image/urf`), like the QL-810W. No driver, CUPS or other
+  program is needed on the server; the plugin encodes the labels itself (8-bit grayscale, 300 dpi).
+- Before each job the plugin reads the loaded paper from the printer and refuses to print when it
+  does not match the configured label type. *Read the loaded paper from the printer*, next to the
+  label type, selects the matching type.
+- *Cutting* (after each label, once after the last label, or never) and *Print quality* (normal
+  or high) are sent with each job when the printer supports them; *Test connection* lists what
+  it supports. Cutting once gives one strip with all the labels: handy with die-cut labels, but
+  on continuous tape the labels then have to be cut by hand.
+- Labels whose width as read is not the tape width (DK-11204, DK-11208, DK-11202 and long labels on
+  continuous tape) are rotated before printing.
+
 ## Label types
 
 The label type is chosen in the configuration (*Output > Label type*). The list is built
 automatically from the classes in `src/Format/`: to add a type, add a file there with a
-class implementing `GlpiPlugin\Assetlabel\Format\LabelFormat` (name, size, resolution,
-margins), named like the file. Continuous tapes extend `ContinuousTape` (only the tape width
-and name are needed) and get their length from the configuration.
+class implementing `GlpiPlugin\Assetlabel\Format\LabelFormat` (name, size, tape width,
+resolution, margins), named like the file. Die-cut labels extend `DieCutLabel` and pass the
+name, size, tape width and margins to its constructor; the tape width is the width across the
+print head, and a label whose width as read differs from it is rotated for direct printing.
+Continuous tapes extend `ContinuousTape` (only the tape width and name are needed) and get
+their length from the configuration.
 
 The layout adapts to the size: the QR code takes at most the same share of the width as on DK-11209 (~39 %), text grows on
 labels taller than DK-11209, and on small labels the text lines that do not fit are left
